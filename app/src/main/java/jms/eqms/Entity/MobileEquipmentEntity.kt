@@ -27,8 +27,3 @@ open class MobileEquipmentEntity(
     constructor() : this("","","",UpdateStatus.YET.value)
 }
 
-enum class UpdateStatus(val value:Int){
-    YET(0),
-    ALREADY(1),
-    CALLBACK_WAIT(2)
-}

@@ -20,6 +20,10 @@ import jms.eqms.R
  */
 class EquipmentListFragment :Fragment(){
 
+    companion object {
+        @JvmStatic fun newInstance():EquipmentListFragment = EquipmentListFragment()
+    }
+
     private lateinit var adapter:EquipmentListAdapter
     private var query:RealmQuery<MobileEquipmentEntity> = Realm.getDefaultInstance().where(MobileEquipmentEntity::class.java)
     @BindView(R.id.listView) lateinit var mList:ListView
@@ -37,7 +41,7 @@ class EquipmentListFragment :Fragment(){
         super.onResume()
 
         val result = query.equalTo("update_status",UpdateStatus.YET.value).findAllSorted("code")
-        adapter = EquipmentListAdapter(context,result)
+        adapter = EquipmentListAdapter(context!!,result)
         mList.adapter = adapter
 
     }

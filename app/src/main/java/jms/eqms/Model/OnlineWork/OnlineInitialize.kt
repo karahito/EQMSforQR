@@ -55,5 +55,8 @@ open class OnlineInitialize {
                                 callback.onInitEnd()
                             })
         }
+
+        fun unsubscribe(){
+        }
     }
 }

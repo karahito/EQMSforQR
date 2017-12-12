@@ -14,7 +14,7 @@ object TakingDate{
     fun checkTakingDate(src_date:String):Boolean{
         val calendar = Calendar.getInstance()
         val today = calendar.get(Calendar.DATE)
-        if(today > 25)
+        if(today < 25)
             calendar.add(Calendar.MONTH,-1)
 
         val decision = SimpleDateFormat("yyyyMM").format(calendar.time) + "25"
