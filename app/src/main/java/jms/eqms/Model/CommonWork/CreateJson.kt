@@ -14,13 +14,12 @@ import java.util.*
 object CreateJson {
 
     @SuppressLint("SimpleDateFormat")
-    fun createUpdateJson(code:String, modified:String):String{
+    fun createUpdateJson(code: String, modified: String): UpdateEntity {
         val entity = UpdateEntity(
                 code = code,
                 modified_by = modified,
                 update_date = SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().time)
         )
-        return Gson().toJson(entity)
+        return entity
     }
-
 }

@@ -1,14 +1,11 @@
 package jms.eqms
 
-import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.net.ConnectivityManager.TYPE_WIFI
 import android.net.NetworkInfo
-import android.net.wifi.WifiManager
+import android.net.wifi.WifiInfo
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TabLayout
@@ -21,17 +18,17 @@ import android.widget.Switch
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import com.jakewharton.rxbinding.widget.checked
 import com.jakewharton.rxbinding.widget.checkedChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import jms.android.common.LogUtil
 import jms.android.common.utility.NetworkReceiver
-import jms.eqms.Entity.UpdateEntity
 import jms.eqms.Model.CommonWork.CreateJson
+import jms.eqms.Model.CommonWork.Initializer
 import jms.eqms.Model.OfflineWork.OfflineInitialize
 import jms.eqms.Model.OnlineWork.ClientProvider
 import jms.eqms.Model.OnlineWork.OnlineInitialize
@@ -39,35 +36,8 @@ import jms.eqms.UI.EquipmentListFragment
 import jms.eqms.UI.HistoryFragment
 
 
-class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener, OnlineInitialize.OnInitializedListener {
+class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener {
 
-    override fun onInitEnd(){
-        progress.dismiss()
-//        supportFragmentManager.beginTransaction()
-//                .add(R.id.tab1,EquipmentListFragment())
-//                .commit()
-        val adapter = object : FragmentPagerAdapter(supportFragmentManager) {
-            override fun getItem(position: Int): Fragment {
-
-//            return EquipmentListFragment.newInstance()
-                return if(position == 0){
-                    EquipmentListFragment.newInstance()
-                }else
-                    HistoryFragment.newInstance()
-            }
-
-            override fun getPageTitle(position: Int): CharSequence? {
-                return pageTitle[position]
-            }
-
-            override fun getCount(): Int {
-                return pageTitle.count()
-            }
-        }
-
-        mViewPager.adapter =adapter
-        mTabLayout.setupWithViewPager(mViewPager)
-    }
     override fun changeToOffline() {
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         if (mConSwitch.isChecked) {
@@ -87,7 +57,7 @@ class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener,
         }
     }
 
-    override fun changeToWifi(info: NetworkInfo) {
+    override fun changeToWifi(info: WifiInfo) {
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         mConSwitch.text = ONLINE
         mConSwitch.checked()
@@ -99,7 +69,9 @@ class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener,
         private val ONLINE = "ONLINE"
         private val OFFLINE = "OFFLINE"
         val pageTitle = arrayOf("List", "History")
-
+        private val onlineInit = OnlineInitialize.newInstance()
+        private val offlineInit = OfflineInitialize.newInstance()
+        private val initializer =Initializer.newInstance()
     }
     @BindView(R.id.switch1) lateinit var mConSwitch:Switch
     @BindView(R.id.tabLayout) lateinit var mTabLayout:TabLayout
@@ -110,38 +82,121 @@ class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener,
     private val mReceiver = NetworkReceiver(this)
     private val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 
-    private var conMgr:ConnectivityManager? = null
-    private var netInfo:NetworkInfo? = null
     private lateinit var progress:ProgressDialog
-    @SuppressLint("MissingPermission")
+    private lateinit var networkType:String
+
+    private fun init(type:String){
+        progress.show()
+        when(type){
+            /** online initialization*/
+            ONLINE->{
+                initializer.createObservable(onlineInit.createSingle())
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                /** onSuccess */
+                                {
+                                    progress.dismiss()
+                                    mConSwitch.text = ONLINE
+                                    mConSwitch.checked()
+                                    val adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+                                        override fun getItem(position: Int): Fragment {
+                                            return if(position == 0){
+                                                EquipmentListFragment.newInstance()
+                                            }else
+                                                HistoryFragment.newInstance()
+                                        }
+
+                                        override fun getPageTitle(position: Int): CharSequence? {
+                                            return pageTitle[position]
+                                        }
+
+                                        override fun getCount(): Int {
+                                            return pageTitle.count()
+                                        }
+                                    }
+                                    mViewPager.adapter =adapter
+                                    mTabLayout.setupWithViewPager(mViewPager)
+                                },
+                                /** onError */
+                                {
+                                    progress.dismiss()
+                                    mConSwitch.text= OFFLINE
+                                    LogUtil.e(it)
+                                    Toast.makeText(this,"Initialize failed",Toast.LENGTH_SHORT).show()
+                                }
+                        )
+                        .addTo(initializer.disposable)
+            }
+            /** offline initialization */
+            OFFLINE ->{
+                initializer.createObservable(offlineInit.createSingle())
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                /** onSuccess */
+                                {
+                                    progress.dismiss()
+                                    mConSwitch.text = OFFLINE
+                                    val adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+                                        override fun getItem(position: Int): Fragment {
+                                            return if(position == 0){
+                                                EquipmentListFragment.newInstance()
+                                            }else
+                                                HistoryFragment.newInstance()
+                                        }
+
+                                        override fun getPageTitle(position: Int): CharSequence? {
+                                            return pageTitle[position]
+                                        }
+
+                                        override fun getCount(): Int {
+                                            return pageTitle.count()
+                                        }
+                                    }
+                                    mViewPager.adapter =adapter
+                                    mTabLayout.setupWithViewPager(mViewPager)
+                                },
+                                /** onError */
+                                {
+                                    progress.dismiss()
+                                    mConSwitch.text= OFFLINE
+                                    LogUtil.e(it)
+                                    Toast.makeText(this,"Initialize failed",Toast.LENGTH_SHORT).show()
+                                }
+                        )
+                        .addTo(initializer.disposable)
+
+            }
+        }
+
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
         Realm.init(this)
 
-
-
         progress = ProgressDialog (this)
         progress.setCancelable(false)
-        progress.show()
-        conMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        netInfo = conMgr?.activeNetworkInfo
-        if (netInfo?.type == TYPE_WIFI) {
-            val wifiMgr = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val wifiInfo = wifiMgr.connectionInfo
-            if (wifiInfo.ssid == ACCEPT_SSID) {
-                OnlineInitialize().initialize(this)
-                mConSwitch.text = ONLINE
-                mConSwitch.checked()
-            }else {
-                OfflineInitialize().initialize()
+
+        val info = NetworkReceiver(this).getNetworkInfo()
+
+
+        if (info is WifiInfo) {
+            if (info.ssid == ACCEPT_SSID) {
+                networkType = ONLINE
+            }else{
                 mConSwitch.text= OFFLINE
+                networkType = OFFLINE
             }
-        }else {
-            OfflineInitialize().initialize()
+        }else{
             mConSwitch.text= OFFLINE
+            networkType = OFFLINE
         }
+
+        init(networkType)
 
 
         mConSwitch.setOnCheckedChangeListener { _, check ->
@@ -152,7 +207,6 @@ class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener,
 
             mConSwitch.invalidate()
         }
-
         mCamera.setOnClickListener {
             if (mModifedBy.text.length == 3) {
                 IntentIntegrator(this).initiateScan()
@@ -201,11 +255,10 @@ class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener,
         }
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
-        supportFragmentManager.beginTransaction()
-                .remove(EquipmentListFragment())
-                .commit()
+        initializer.dispose()
     }
 
 }
