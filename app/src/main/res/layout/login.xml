@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:columnCount="2"
+    android:rowCount="1">
+
+
+    <EditText
+        android:id="@+id/login_id"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
+        android:layout_row="0"
+        android:layout_rowWeight="1"
+        android:inputType="numberSigned"
+        android:imeOptions="actionDone"
+        android:ems="4"
+        android:gravity="center"
+        android:hint="社員番号" />
+
+    <TextView
+        android:id="@+id/login_name"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_row="0"
+        android:layout_rowWeight="1"
+        android:ems="10"
+        android:gravity="center"
+        android:text="社員名" />
+
+</GridLayout>

@@ -14,11 +14,10 @@ import retrofit2.http.Query
  */
 interface Service {
     @GET("/inventories")
-    fun read(@Query("WCODE") wCode:String): Single<String>
+    fun read(@Query("WCODE") wCode:String): Single<HtmlToJson>
 
     @GET("/inventories/?WCODE=151")
     fun readModel():Call<String>
 
-    @GET("")
-    fun readWeather(@Query("appid") key:String):Single<String>
+
 }

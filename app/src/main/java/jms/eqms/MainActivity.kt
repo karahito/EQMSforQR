@@ -232,27 +232,27 @@ class MainActivity : AppCompatActivity(),NetworkReceiver.OnNetworkStateListener 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (data != null) {
-            progress.show()
-            val intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-            val code = intentResult.contents.lines()[0]
-            val sjson = CreateJson.createUpdateJson(code,mModifedBy.text.toString())
-            ClientProvider.client.transaction(sjson)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        /** onSuccess*/
-                        {
-                            progress.dismiss()
-                            Toast.makeText(this,it.toString(),Toast.LENGTH_SHORT).show()
-                        },
-                        /** onError*/
-                        {
-                            progress.dismiss()
-                            Toast.makeText(this,it.toString(),Toast.LENGTH_SHORT).show()
-                        }
-                    )
-        }
+//        if (data != null) {
+//            progress.show()
+//            val intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+//            val code = intentResult.contents.lines()[0]
+//            val sjson = CreateJson.createUpdateJson(code,mModifedBy.text.toString())
+//            ClientProvider.client.transaction(sjson)
+//                    .subscribeOn(Schedulers.computation())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(
+//                        /** onSuccess*/
+//                        {
+//                            progress.dismiss()
+//                            Toast.makeText(this,it.toString(),Toast.LENGTH_SHORT).show()
+//                        },
+//                        /** onError*/
+//                        {
+//                            progress.dismiss()
+//                            Toast.makeText(this,it.toString(),Toast.LENGTH_SHORT).show()
+//                        }
+//                    )
+//        }
     }
 
 

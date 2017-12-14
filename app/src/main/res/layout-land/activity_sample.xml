@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     tools:context="jms.eqms.Sample.SampleActivity">
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="24dp"
-        android:clickable="true"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera"
-        android:focusable="true" />
-
     <FrameLayout
         android:id="@+id/frame_top"
         android:layout_width="0dp"
@@ -32,9 +18,11 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_weight="1" />
+        app:layout_constraintVertical_weight="1">
 
-    <android.support.v4.view.ViewPager
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/frame_center"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -46,20 +34,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/frame_top"
-        app:layout_constraintVertical_weight="4">
+        app:layout_constraintVertical_weight="2">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabMaxWidth="0dp"
-            >
-
-        </android.support.design.widget.TabLayout>
-
-    </android.support.v4.view.ViewPager>
-
-
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
 

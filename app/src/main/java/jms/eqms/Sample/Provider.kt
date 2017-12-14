@@ -27,7 +27,7 @@ class Provider{
                     .client(OkHttpClient())
                     .baseUrl(baseURL)
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(JspoonConverterFactory.create())
                     .build()
                     .create(Service::class.java)
         }
