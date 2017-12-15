@@ -8,17 +8,30 @@
 
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="32dp"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_play_for_work_black_24dp" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
         android:clickable="true"
+        android:focusable="true"
+        app:elevation="@dimen/bootstrap_alert_default_font_size"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera"
-        android:focusable="true" />
+        app:srcCompat="@drawable/ic_camera_alt_black_48dp" />
 
     <FrameLayout
         android:id="@+id/frame_top"
@@ -32,7 +45,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_weight="1" />
+        app:layout_constraintVertical_weight="1" >
+
+    </FrameLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/frame_center"
@@ -44,6 +59,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/frame_top"
         app:layout_constraintVertical_weight="4">
@@ -52,13 +68,11 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabMaxWidth="0dp"
-            >
+            app:tabMaxWidth="0dp">
 
         </android.support.design.widget.TabLayout>
 
     </android.support.v4.view.ViewPager>
-
 
 
 </android.support.constraint.ConstraintLayout>

@@ -32,24 +32,26 @@ class NetworkApi {
         val compositeDipose = CompositeDisposable()
     }
 
-    fun login(wCode:String):Single<Unit> {
+    fun login(wCode:String):Single<String> {
         lateinit var subscription: Disposable
 
-        return Single.create {
+        return Single.create {emitter->
             subscription = client.login(wCode)
                     .subscribeOn(Schedulers.single())
                     .subscribe(
-
                             /** onSuccess*/
                             {
                                 try {
                                     val parse = Gson().fromJson(it.json, LoginResponse::class.java)
                                     if (parse.error != null || parse.wName == null) {
                                         LogUtil.d(parse.error)
+                                        emitter.onError(ClassCastException("${parse.error}"))
                                     } else {
                                         LogUtil.d(parse.wName)
+                                        emitter.onSuccess(parse.wName)
                                     }
                                 } catch (e: NullPointerException) {
+                                    emitter.onError(e)
                                     LogUtil.e(e)
                                 }finally {
                                     subscription.dispose()
@@ -58,6 +60,7 @@ class NetworkApi {
                             /** onError*/
                             {
                                 LogUtil.e(it)
+                                emitter.onError(it)
                             }
                     )
         }
@@ -94,7 +97,6 @@ class NetworkApi {
                                 subscription.dispose()
                             }
                     )
-//                    .addTo(compositeDipose)
         }
     }
 }

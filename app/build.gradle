@@ -54,4 +54,14 @@ dependencies {
     compile 'com.journeyapps:zxing-android-embedded:3.4.0@aar'
     compile 'com.google.zxing:core:3.3.0'
     //===========================================================================================================
+
+    /**
+     * Design Support Libraries
+     */
+    //===========================================================================================================
+    /** bootstrap */
+    ext.bootstrap_version = "2.3.2"
+    compile "com.beardedhen:androidbootstrap:$bootstrap_version"
+    //===========================================================================================================
+
 }

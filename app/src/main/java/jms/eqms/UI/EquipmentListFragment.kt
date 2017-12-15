@@ -21,7 +21,7 @@ import jms.eqms.R
 class EquipmentListFragment :Fragment(){
 
     companion object {
-        @JvmStatic fun newInstance():EquipmentListFragment = EquipmentListFragment()
+        @JvmStatic fun newInstance():Fragment = EquipmentListFragment()
     }
 
     private lateinit var adapter:EquipmentListAdapter

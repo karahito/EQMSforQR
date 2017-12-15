@@ -1,6 +1,7 @@
 package jms.eqms
 
 import android.app.Application
+import com.beardedhen.androidbootstrap.TypefaceProvider
 import io.realm.Realm
 import jms.android.common.utility.RestProvider
 import jms.eqms.Service.EqmsService
@@ -19,5 +20,6 @@ class MyApplication:Application() {
     override fun onCreate() {
         super.onCreate()
         Realm.init(this.applicationContext)
+        TypefaceProvider.registerDefaultIconSets()
     }
 }

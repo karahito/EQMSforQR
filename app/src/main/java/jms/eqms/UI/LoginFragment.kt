@@ -19,16 +19,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import io.realm.Realm
-import jms.android.common.LogUtil
-import jms.android.common.utility.RestProvider
-import jms.eqms.Entity.HistoryEntity
 import jms.eqms.Entity.StockTake
+import jms.eqms.Model.OnlineWork.NetworkApi
 import jms.eqms.R
-import jms.eqms.Sample.NameEntity
 import jms.eqms.Sample.SampleActivity.QRListener
-import jms.eqms.Service.EqmsService
-import java.lang.NullPointerException
 
 
 /**
@@ -41,34 +35,46 @@ class LoginFragment:RxFragment(), QRListener{
         progress.setCancelable(false)
         progress.show()
         val stockTake = StockTake(mLoginId.text.toString(),eCode)
-//        val json = Gson().toJson(stockTake)
         client.transaction(stockTake.WCODE,stockTake.ECODE)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        /** */
                         {
-                            try {
-                                val parse:Stock? = Gson().fromJson(it.json,Stock::class.java)
-                                if (parse != null) {
-                                    Toast.makeText(context,"${parse.error}",Toast.LENGTH_SHORT).show()
-                                }else {
-                                    Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
-                                    val realm = Realm.getDefaultInstance()
-                                }
-                                progress.dismiss()
-                            }catch (e:Exception){
-                                progress.dismiss()
-                                LogUtil.e(e)
-                            }
-                        },
-                        /** */
-                        {
-                            LogUtil.e(it)
+                            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
                             progress.dismiss()
-                        }
-                )
+                        },
+                        {
+                            progress.dismiss()
+                        })
                 .addTo(compositeDisposable)
+//        val json = Gson().toJson(stockTake)
+//        client.transaction(stockTake.WCODE,stockTake.ECODE)
+//                .subscribeOn(Schedulers.computation())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        /** */
+//                        {
+//                            try {
+//                                val parse:Stock? = Gson().fromJson(it.json,Stock::class.java)
+//                                if (parse != null) {
+//                                    Toast.makeText(context,"${parse.error}",Toast.LENGTH_SHORT).show()
+//                                }else {
+//                                    Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
+//                                    val realm = Realm.getDefaultInstance()
+//                                }
+//                                progress.dismiss()
+//                            }catch (e:Exception){
+//                                progress.dismiss()
+//                                LogUtil.e(e)
+//                            }
+//                        },
+//                        /** */
+//                        {
+//                            LogUtil.e(it)
+//                            progress.dismiss()
+//                        }
+//                )
+//                .addTo(compositeDisposable)
     }
 
 
@@ -76,8 +82,9 @@ class LoginFragment:RxFragment(), QRListener{
         @JvmStatic
         fun newInstance(): Fragment = LoginFragment()
         private val ID_LENGTH = 3
-        private var client:EqmsService = RestProvider.provider as EqmsService
+//        private var client:EqmsService = RestProvider.provider as EqmsService
         private val compositeDisposable = CompositeDisposable()
+        private val client = NetworkApi.newInstance()
     }
 
     @BindView(R.id.login_id) lateinit var mLoginId:EditText
@@ -102,28 +109,20 @@ class LoginFragment:RxFragment(), QRListener{
 
     private fun setUserName(view: TextView){
         if(view.text.length == ID_LENGTH) {
+            val progress = ProgressDialog(context)
+            progress.setCancelable(false)
+            progress.show()
             client.login(mLoginId.text.toString())
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            /** onSuccess*/
                             {
-                                try {
-                                    val parse = Gson().fromJson(it.json, NameEntity::class.java)
-                                    if (!parse.error.isNullOrEmpty())
-                                        Toast.makeText(context,parse.error,Toast.LENGTH_SHORT).show()
-                                    mLoginName.text = parse.name
-                                    mLoginName.invalidate()
-                                }catch (e:NullPointerException){
-                                    mLoginName.text=""
-                                    LogUtil.e(e)
-                                }
-                            },
-                            /** onError */
-                            {
-                                LogUtil.e(it)
-                            }
-                    )
+                                mLoginName.text = it
+                                progress.dismiss()
+                            },{
+                                progress.dismiss()
+                                Toast.makeText(context,it.message,Toast.LENGTH_SHORT).show()
+                            })
                     .addTo(compositeDisposable)
         }else{
             mLoginName.text = ""
