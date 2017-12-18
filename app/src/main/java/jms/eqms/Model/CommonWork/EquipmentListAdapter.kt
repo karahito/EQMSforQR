@@ -55,6 +55,4 @@ internal class EquipmentListAdapter(context: Context, realmResults: OrderedRealm
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         return view
     }
-
-
 }
